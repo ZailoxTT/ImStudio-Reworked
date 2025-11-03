@@ -24,6 +24,12 @@ Inspired by [Code-Building/ImGuiBuilder](https://github.com/Code-Building/ImGuiB
  - Export to clipboard
  - Useful tools (Style & Color export, Demo Window, etc.)
  - Helpful resources (external)
+
+## ToDo
+ - import feature
+ - Adding objects (lines, circles, etc.)
+ - Saving/Loading as a Project
+ - Multilingual support
  
 ## Installation
 
