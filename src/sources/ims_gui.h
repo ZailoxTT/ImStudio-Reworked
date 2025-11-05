@@ -25,29 +25,29 @@ namespace ImStudio
         bool                    menubar                    = true;                 // Menubar State
         ImVec2                  mb_P                       = {};                   // Menubar Pos
         ImVec2                  mb_S                       = {};                   // Menubar Size
-        void                    ShowMenubar();         
+        void                    ShowMenubar();
 
         bool                    sidebar                    = true;                 // Sidebar State
         ImVec2                  sb_P                       = {};                   // Sidebar Pos
         ImVec2                  sb_S                       = {};                   // Sidebar Size
-        void                    ShowSidebar();         
+        void                    ShowSidebar();
 
         bool                    properties                 = true;                 // Properties State
         ImVec2                  pt_P                       = {};                   // Properties Pos
         ImVec2                  pt_S                       = {};                   // Properties Size
-        void                    ShowProperties();      
+        void                    ShowProperties();
 
         bool                    viewport                   = true;                 // Viewport State
         ImVec2                  vp_P                       = {};                   // Viewport Pos
         ImVec2                  vp_S                       = {};                   // Viewport Size
-        BufferWindow            bw;            
-        void                    ShowViewport               ();         
+        BufferWindow            bw;
+        void                    ShowViewport               ();
 
         bool                    wksp_output                = false;                // Workspace "Output"
         ImVec2                  ot_P                       = {};                   // Output Window Pos
         ImVec2                  ot_S                       = {};                   // Output Window Size
         std::string             output                     = {};
-        void                    ShowOutputWorkspace();        
+        void                    ShowOutputWorkspace();
 
         bool                    child_style                = false;                // Show Style Editor
         bool                    child_demo                 = false;                // Show Demo Window
@@ -56,6 +56,13 @@ namespace ImStudio
         bool                    child_stack                = false;                // Show Stack Tool
         bool                    child_resources            = false;                // Show Help Resources
         bool                    child_about                = false;                // Show About Window
+
+        std::string             project_name            = "Untitled";
+        bool                    save_dialog_open        = false;
+        bool                    open_dialog_open        = false;
+        float                   autosave_timer          = 0.0f;
+        bool                    started                 = false;
+        bool                    last_write              = false;
     };
 
 }

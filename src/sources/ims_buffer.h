@@ -20,15 +20,18 @@ namespace ImStudio
       bool                    open_child              = false;                //
       int                     open_child_id           = -1;                   //
       int                     selected_obj_id         = -1;                   //
-    
+
       bool                    staticlayout            = false;                //
-    
+
       std::vector<Object>     objects                 = {};                   //
-  
+
       void                    drawall                 ();
       Object *                getobj                  (int id);
       BaseObject *            getbaseobj              (int id);
       void                    create                  (std::string type_, bool atcursor = false);
+
+      std::string to_json_string() const;
+      void load_from_json(const std::string& json_str);
   };
 
 }

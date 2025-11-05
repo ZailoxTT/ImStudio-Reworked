@@ -121,3 +121,104 @@ void ImStudio::ContainerChild::drawall(int *select, bool staticlayout)
 
     grabinit = true;
 }
+
+void ImStudio::BaseObject::to_json(json& j) const {
+    j["id"] = id;
+    j["type"] = type;
+    j["identifier"] = identifier;
+    j["state"] = state;
+    j["pos"] = pos;
+    j["size"] = size;
+    j["width"] = width;
+    j["init"] = init;
+    j["propinit"] = propinit;
+    j["initial_selection"] = initial_selection;
+    j["locked"] = locked;
+    j["center_h"] = center_h;
+    j["autoresize"] = autoresize;
+    j["animate"] = animate;
+    j["label"] = label;
+    j["value_s"] = value_s;
+    j["value_b"] = value_b;
+    j["ischildwidget"] = ischildwidget;
+    j["item_current"] = item_current;
+}
+
+void ImStudio::BaseObject::from_json(const json& j) {
+    id = j.at("id").get<int>();
+    type = j.at("type").get<std::string>();
+    identifier = j.at("identifier").get<std::string>();
+    state = j.at("state").get<bool>();
+    pos = j.at("pos").get<ImVec2>();
+    size = j.at("size").get<ImVec2>();
+    width = j.at("width").get<float>();
+    init = j.at("init").get<bool>();
+    propinit = j.at("propinit").get<bool>();
+    initial_selection = j.at("initial_selection").get<bool>();
+    locked = j.at("locked").get<bool>();
+    center_h = j.at("center_h").get<bool>();
+    autoresize = j.at("autoresize").get<bool>();
+    animate = j.at("animate").get<bool>();
+    label = j.at("label").get<std::string>();
+    value_s = j.at("value_s").get<std::string>();
+    value_b = j.at("value_b").get<bool>();
+    ischildwidget = j.at("ischildwidget").get<bool>();
+    item_current = j.at("item_current").get<int>();
+}
+
+void ImStudio::ContainerChild::to_json(json& j) const {
+    j["id"] = id;
+    j["freerect"] = freerect;
+    j["windowrect"] = windowrect;
+    j["open"] = open;
+    j["locked"] = locked;
+    j["border"] = border;
+    j["init"] = init;
+    j["grab1_id"] = grab1_id;
+    j["grab2_id"] = grab2_id;
+    j["grab1"] = grab1;
+    j["grab2"] = grab2;
+    j["grabinit"] = grabinit;
+    json objects_json = json::array();
+    for (const auto& obj : objects) {
+        json obj_j;
+        obj.to_json(obj_j);
+        objects_json.push_back(obj_j);
+    }
+    j["objects"] = objects_json;
+}
+
+void ImStudio::ContainerChild::from_json(const json& j) {
+    id = j.at("id").get<int>();
+    freerect = j.at("freerect").get<ImRect>();
+    windowrect = j.at("windowrect").get<ImRect>();
+    open = j.at("open").get<bool>();
+    locked = j.at("locked").get<bool>();
+    border = j.at("border").get<bool>();
+    init = j.at("init").get<bool>();
+    grab1_id = j.at("grab1_id").get<int>();
+    grab2_id = j.at("grab2_id").get<int>();
+    grab1 = j.at("grab1").get<ImVec2>();
+    grab2 = j.at("grab2").get<ImVec2>();
+    grabinit = j.at("grabinit").get<bool>();
+    objects.clear();
+    if (j.contains("objects")) {
+        for (const auto& obj_j : j.at("objects")) {
+            BaseObject obj;
+            obj.from_json(obj_j);
+            objects.push_back(obj);
+        }
+    }
+}
+
+void ImStudio::Object::to_json(json& j) const {
+    BaseObject::to_json(j);
+    json child_j;
+    child.to_json(child_j);
+    j["child"] = child_j;
+}
+
+void ImStudio::Object::from_json(const json& j) {
+    BaseObject::from_json(j);
+    child.from_json(j.at("child"));
+}

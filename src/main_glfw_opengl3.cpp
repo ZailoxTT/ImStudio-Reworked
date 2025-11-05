@@ -1,9 +1,15 @@
 #include <GLFW/glfw3.h>
+#include <fstream>
+#include <string>
+#include <iterator>
+#include <iostream>
 #include "imgui.h"
 #include "imgui_impl_glfw.h"
 #include "imgui_impl_opengl3.h"
 
 #include "main_window.h"
+
+#include "utils/filesystem_utils.h"
 
 #ifndef PROJECT_VERSION_STRING
 #define PROJECT_VERSION_STRING "0.0.0"
@@ -37,7 +43,24 @@ int main(int argc, char *argv[])
         }
     }
 
+    std::cout << "Project dir: " << ImStudio::FileSystem::GetProjectDirectory() << std::endl;
+
     ImStudio::GUI gui;
+
+    ImStudio::FileSystem::EnsureProjectDirectory();
+    std::string last_path = ImStudio::FileSystem::GetProjectDirectory() + "\\last_open.json";
+
+    std::ifstream file(last_path);
+    if (file.is_open()) {
+      std::string json((std::istreambuf_iterator<char>(file)), {});
+      file.close();
+      try {
+        gui.bw.load_from_json(json);
+      } catch (...) {
+        //
+      }
+    }
+
     gui.bw.objects.reserve(2048);
 
     glfwSetErrorCallback(glfw_error_callback);
@@ -75,7 +98,7 @@ int main(int argc, char *argv[])
 
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
-    
+
     MainWindowStyle();
 
     ImGui_ImplGlfw_InitForOpenGL(glwindow, true);
@@ -83,6 +106,20 @@ int main(int argc, char *argv[])
 
     while ((!glfwWindowShouldClose(glwindow)) && (gui.state))
     {
+      gui.autosave_timer += ImGui::GetIO().DeltaTime;
+      if (gui.autosave_timer >= 3.0f && gui.last_write != true) {
+        try {
+          std::string json = gui.bw.to_json_string();
+          std::string path = ImStudio::FileSystem::GetProjectDirectory() + "\\last_open.json";
+          std::ofstream file(path);
+          if (file.is_open()) {
+              file << json;
+              file.close();
+              gui.last_write = true;
+            }
+          } catch (...) {}
+          //gui.autosave_timer = 0.0f;
+        }
         glfwPollEvents();
         ImGui_ImplOpenGL3_NewFrame();
         ImGui_ImplGlfw_NewFrame();

@@ -26,7 +26,7 @@ Inspired by [Code-Building/ImGuiBuilder](https://github.com/Code-Building/ImGuiB
  - Helpful resources (external)
 
 ## ToDo
- - import feature
+ - ~~import feature~~ #Implemented!
  - Adding objects (lines, circles, etc.)
  - Saving/Loading as a Project
  - Multilingual support

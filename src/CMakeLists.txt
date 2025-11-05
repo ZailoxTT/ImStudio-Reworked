@@ -2,7 +2,7 @@ set(TARGET ImStudio)
 
 include(third-party)
 
-file(GLOB_RECURSE SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/sources/*.cpp ${CMAKE_CURRENT_SOURCE_DIR}/utils/*.cpp)
+file(GLOB_RECURSE SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/sources/*.cpp ${CMAKE_CURRENT_SOURCE_DIR}/utils/*.cpp ${CMAKE_CURRENT_SOURCE_DIR}/utils/filesystem_utils.cpp)
 file(GLOB_RECURSE HEADERS ${CMAKE_CURRENT_SOURCE_DIR}/sources/*.h ${CMAKE_CURRENT_SOURCE_DIR}/utils/*.h)
 
 add_executable(${TARGET} WIN32 MACOSX_BUNDLE
@@ -11,6 +11,13 @@ add_executable(${TARGET} WIN32 MACOSX_BUNDLE
     main_glfw_opengl3.cpp
     main_window.cpp
 )
+
+set_target_properties(ImStudio PROPERTIES
+    CXX_STANDARD 17
+    CXX_EXTENSIONS OFF
+)
+
+target_link_libraries(${TARGET} PRIVATE nlohmann_json::nlohmann_json)
 
 message(STATUS "IMGUI_INCLUDE_DIRS: ${IMGUI_INCLUDE_DIRS}")
 message(STATUS "FMT_INCLUDE_DIRS: ${FMT_INCLUDE_DIRS}")
@@ -27,6 +34,10 @@ target_link_libraries(${TARGET} PRIVATE ${FMT_LIBRARIES})
 target_link_libraries(${TARGET} PRIVATE ${OPENGL_LIBRARIES})
 target_link_libraries(${TARGET} PRIVATE ${CMAKE_THREAD_LIBS_INIT})
 target_link_libraries(${TARGET} PRIVATE ${CMAKE_DL_LIBS})
+
+target_include_directories(${TARGET} PRIVATE 
+    ${CMAKE_CURRENT_SOURCE_DIR}/utils
+)
 
 
 if (APPLE)

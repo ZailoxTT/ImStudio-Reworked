@@ -13,6 +13,18 @@ add_compile_definitions(PROJECT_VERSION_STRING="${PROJECT_VERSION_STRING}")
 
 project(ImStudio C CXX)
 
+set(CMAKE_C_STANDARD 17)
+set(CMAKE_C_STANDARD_REQUIRED ON) # Ensures compilation fails if C17 is not supported
+set(CMAKE_C_EXTENSIONS OFF)
+
+# === JSON library (nlohmann/json) ===
+include(FetchContent)
+FetchContent_Declare(
+    json
+    URL https://github.com/nlohmann/json/releases/download/v3.11.3/json.tar.xz
+)
+FetchContent_MakeAvailable(json)
+
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
 
 find_package(Git)

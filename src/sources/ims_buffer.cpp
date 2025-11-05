@@ -8,8 +8,11 @@ void ImStudio::BufferWindow::drawall()
         ImVec2 init_size   = ImVec2(parent_size.x * 0.8, parent_size.y * 0.7);
         ImVec2 center      = ImGui::GetMainViewport()->GetCenter();
         ImGui::SetNextWindowPos(center, ImGuiCond_Once, ImVec2(0.5f, 0.5f));
-        ImGui::SetNextWindowSize(size);
-        ImGui::SetNextWindowSize(init_size, ImGuiCond_Once);
+        if (size.x <= 0 || size.y <= 0) {
+          ImGui::SetNextWindowSize(init_size, ImGuiCond_Once);
+        } else {
+          ImGui::SetNextWindowSize(size, ImGuiCond_Always);
+        }
         ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(0.08f, 0.09f, 0.09f, 1.00f));
         ImGui::PushStyleColor(ImGuiCol_ChildBg, ImVec4(0.08f, 0.09f, 0.09f, 1.00f));
         ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.26f, 0.59f, 0.98f, 0.40f));
@@ -189,5 +192,54 @@ void ImStudio::BufferWindow::create(std::string type_, bool atcursor)
         BaseObject childwidget(idgen, type_, open_child_id);
         getobj(open_child_id)->child.objects.push_back(childwidget);
     }
-    selected_obj_id = idgen; // select the new object
+    selected_obj_id = idgen;
+}
+
+
+std::string ImStudio::BufferWindow::to_json_string() const {
+    json j;
+    j["state"] = state;
+    j["size"] = size;
+    j["pos"] = pos;
+    j["idgen"] = idgen;
+    j["open_child"] = open_child;
+    j["open_child_id"] = open_child_id;
+    j["selected_obj_id"] = selected_obj_id;
+    j["staticlayout"] = staticlayout;
+    json objects_json = json::array();
+    for (const auto& obj : objects) {
+        json obj_j;
+        obj.to_json(obj_j);
+        objects_json.push_back(obj_j);
+    }
+    j["objects"] = objects_json;
+    return j.dump(4);
+}
+
+void ImStudio::BufferWindow::load_from_json(const std::string& json_str) {
+    json j = json::parse(json_str);
+    state = j.at("state").get<bool>();
+    size = j.at("size").get<ImVec2>();
+    pos = j.at("pos").get<ImVec2>();
+    idgen = j.at("idgen").get<int>();
+    open_child = j.at("open_child").get<bool>();
+    open_child_id = j.at("open_child_id").get<int>();
+    selected_obj_id = j.at("selected_obj_id").get<int>();
+    staticlayout = j.at("staticlayout").get<bool>();
+    objects.clear();
+    if (j.contains("objects")) {
+        for (const auto& obj_j : j.at("objects")) {
+            Object obj(0, "");
+            obj.from_json(obj_j);
+            objects.push_back(obj);
+        }
+    }
+    int max_id = 0;
+    for (const auto& obj : objects) {
+        max_id = std::max(max_id, obj.id);
+        for (const auto& child_obj : obj.child.objects) {
+            max_id = std::max(max_id, child_obj.id);
+        }
+    }
+    idgen = max_id + 1;
 }
